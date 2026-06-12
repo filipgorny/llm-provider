@@ -1,0 +1,11 @@
+# Example llm-provider configuration.
+# Select which backend to use via "llm", then fill in its section.
+
+llm: ollama
+
+ollama:
+  url: http://localhost:11434
+  model: qwen2.5-coder:14b
+
+claude:
+  model: claude-opus-4-8   # optional; omit to use the claude CLI default model
