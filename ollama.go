@@ -20,6 +20,10 @@ type Ollama struct {
 
 	// Client is the HTTP client used for requests. If nil, http.DefaultClient is used.
 	Client *http.Client
+
+	// Options are passed through as Ollama request "options" (e.g. num_ctx to size
+	// the context window to available VRAM, temperature, etc.). Omitted when nil.
+	Options map[string]any
 }
 
 var _ Llm = (*Ollama)(nil)
@@ -34,9 +38,10 @@ func NewOllama(url, model string) *Ollama {
 }
 
 type ollamaGenerateRequest struct {
-	Model  string `json:"model"`
-	Prompt string `json:"prompt"`
-	Stream bool   `json:"stream"`
+	Model   string         `json:"model"`
+	Prompt  string         `json:"prompt"`
+	Stream  bool           `json:"stream"`
+	Options map[string]any `json:"options,omitempty"`
 }
 
 type ollamaGenerateResponse struct {
@@ -47,9 +52,10 @@ type ollamaGenerateResponse struct {
 // Prompt sends prompt to the Ollama server and returns the generated text.
 func (o *Ollama) Prompt(ctx context.Context, prompt string) (string, error) {
 	payload, err := json.Marshal(ollamaGenerateRequest{
-		Model:  o.Model,
-		Prompt: prompt,
-		Stream: false,
+		Model:   o.Model,
+		Prompt:  prompt,
+		Stream:  false,
+		Options: o.Options,
 	})
 
 	if err != nil {
