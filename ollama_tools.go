@@ -105,6 +105,10 @@ func (o *Ollama) CallTools(ctx context.Context, messages []Message, tools []Tool
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		if strings.Contains(string(data), "does not support tools") {
+			return ToolResponse{}, fmt.Errorf("%w: %s", ErrToolsUnsupported, strings.TrimSpace(string(data)))
+		}
+
 		return ToolResponse{}, fmt.Errorf("ollama: unexpected status %d: %s", resp.StatusCode, string(data))
 	}
 
