@@ -20,6 +20,10 @@ type Config struct {
 type OllamaConfig struct {
 	URL   string `yaml:"url"`
 	Model string `yaml:"model"`
+
+	// Options are passed through as Ollama request options, e.g.
+	// {num_ctx: 8192} to size the context window, or {temperature: 0.2}.
+	Options map[string]any `yaml:"options"`
 }
 
 // ClaudeConfig configures the ClaudeHeadless strategy. Model is optional; when
@@ -49,7 +53,10 @@ func NewLlmProviderFromConfig(c Config) (*LlmProvider, error) {
 			return nil, fmt.Errorf("llm: ollama requires a model")
 		}
 
-		return NewLlmProvider(NewOllama(c.Ollama.URL, c.Ollama.Model)), nil
+		ollama := NewOllama(c.Ollama.URL, c.Ollama.Model)
+		ollama.Options = c.Ollama.Options
+
+		return NewLlmProvider(ollama), nil
 
 	case "claude":
 

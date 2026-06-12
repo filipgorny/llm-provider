@@ -20,9 +20,10 @@ type ollamaSession struct {
 }
 
 type ollamaChatRequest struct {
-	Model    string    `json:"model"`
-	Messages []Message `json:"messages"`
-	Stream   bool      `json:"stream"`
+	Model    string         `json:"model"`
+	Messages []Message      `json:"messages"`
+	Stream   bool           `json:"stream"`
+	Options  map[string]any `json:"options,omitempty"`
 }
 
 type ollamaChatResponse struct {
@@ -57,6 +58,7 @@ func (s *ollamaSession) Send(ctx context.Context, text string) (string, error) {
 		Model:    s.ollama.Model,
 		Messages: s.messages,
 		Stream:   false,
+		Options:  s.ollama.Options,
 	})
 
 	if err != nil {
